@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="description" content="Emulating real sheets of paper in web documents (using HTML and CSS)">
+		<title>Sheets of Paper</title>
+		<link rel="stylesheet" type="text/css" href="css/sheets-of-paper-a4.css">
+	</head>
+	<body class="document">
+		<div class="page" contenteditable="true">
+			<center><h2><u>BONAFIDE CERTIFICATE</u></h2></center>
+			<br>
+			<br>
+			<p>&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp This is to certify that <b>Miss. Deepika Sheoran</b> Daughter of <b>Mr. Dilbagh  Singh</b>, and <b>Mrs. Rajesh Kumari</b>, having admission number 2015V114B-IIVER, was a student of 5th year, B.V.SC & A.H for the academic year 2019-20. She was bonafide student of this institute. There is no dues against her.</p>
+			<br>
+			<br>
+			<br>
+			<p style="text-align: right;" font-size="16"><b>Dean &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b></p>
+			
+		</div>
+		<div class="page" contenteditable="true">
+			<center><h2><u>TO WHOM IT MAY CONCERN</u></h2></center>
+			<br>
+			<br>
+			<p>&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp This is to certify that <b>Ms. SHARADHA VASAL D/o VK VASAL, Adm No. 2018V164B-IIVER</b> is a bonafide student of 4th year B.V.Sc. & A.H (session 2021-22) at this Institute. </p>
+			<br>
+			<br>
+			<br>
+			<br>
+			<p style="text-align: right" font-size="16"><b>Dean &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b></p>
+			<!--<div class="page-break" contenteditable="false"></div>-->
+		</div>
+		<div class="page" contenteditable="true">
+			<center><h2><u>BONAFIDE CERTIFICATE</u></h2></center>
+			<br>
+			<br>
+			<p>This is to certify that <b>Miss. Deepika Sheoran</b> Daughter of <b>Mr. Dilbagh  Singh</b>, and <b>Mrs. Rajesh Kumari</b>, having admission number 2015V114B-IIVER, was a student of 5th year, B.V.SC & A.H for the academic year 2019-20. She was bonafide student of this institute. There is no dues against her.</p>
+			<br>
+			<br>
+			<br>
+			<br>
+			<br>
+			<p style="text-align: right" font-size="16"><b>Dean &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b></p>
+			
+		</div>
+		<script type="text/javascript">
+
+		var Config = {};
+		Config.pixelsPerInch = 96;
+		Config.pageHeightInCentimeter = 29.7; 
+		Config.pageMarginBottomInCentimeter = 2;
+
+		window.addEventListener("DOMContentLoaded", function () {
+			applyPageBreaks();
+		});
+
+		function applyPageBreaks() {
+			applyManualPageBreaks();
+			applyAutomaticPageBreaks(Config.pixelsPerInch, Config.pageHeightInCentimeter, Config.pageMarginBottomInCentimeter);
+
+			document.querySelectorAll(".document .page").forEach(function (element) {
+				if (!element.classList.contains("has-events")) {
+					element.addEventListener("blur", function () {
+						applyPageBreaks();
+					});
+
+					element.classList.add("has-events");
+				}
+			});
+		}
+
+		function applyManualPageBreaks() {
+			var docs, pages, snippets;
+			docs = document.querySelectorAll(".document");
+
+			for (var d = docs.length - 1; d >= 0; d--) {
+				pages = docs[d].querySelectorAll(".page");
+
+				for (var p = pages.length - 1; p >= 0; p--) {
+					snippets = pages[p].children;
+
+					for (var s = snippets.length - 1; s >= 0; s--) {
+						if (snippets[s].classList.contains("page-break")) {
+							pages[p].insertAdjacentHTML("afterend", "<div class=\"page\" contenteditable=\"true\"></div>");
+
+							for (var n = snippets.length - 1; n > s; n--) {
+								pages[p].nextElementSibling.insertBefore(snippets[n], pages[p].nextElementSibling.firstChild);
+							}
+
+							snippets[s].remove();
+						}
+					}
+				}
+			}
+		}
+
+		function applyAutomaticPageBreaks(pixelsPerInch, pageHeightInCentimeter, pageMarginBottomInCentimeter) {
+			var inchPerCentimeter = 0.393701;
+			var pageHeightInInch = pageHeightInCentimeter * inchPerCentimeter;
+			var pageHeightInPixels = Math.ceil(pageHeightInInch * pixelsPerInch);
+			var pageMarginBottomInInch = pageMarginBottomInCentimeter * inchPerCentimeter;
+			var pageMarginBottomInPixels = Math.ceil(pageMarginBottomInInch * pixelsPerInch);
+			var docs, pages, snippets, pageCoords, snippetCoords;
+			docs = document.querySelectorAll(".document");
+
+			for (var d = docs.length - 1; d >= 0; d--) {
+				pages = docs[d].querySelectorAll(".page");
+
+				for (var p = 0; p < pages.length; p++) {
+					if (pages[p].clientHeight > pageHeightInPixels) {
+						pages[p].insertAdjacentHTML("afterend", "<div class=\"page\" contenteditable=\"true\"></div>");
+						pageCoords = pages[p].getBoundingClientRect();
+						snippets = pages[p].querySelectorAll("h1, h2, h3, h4, h5, h6, p, ul, ol");
+
+						for (var s = snippets.length - 1; s >= 0; s--) {
+							snippetCoords = snippets[s].getBoundingClientRect();
+
+							if ((snippetCoords.bottom - pageCoords.top + pageMarginBottomInPixels) > pageHeightInPixels) {
+								pages[p].nextElementSibling.insertBefore(snippets[s], pages[p].nextElementSibling.firstChild);
+							}
+						}
+
+						pages = docs[d].querySelectorAll(".page");
+					}
+				}
+			}
+		}
+		</script>
+	</body>
+</html>
